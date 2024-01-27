@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Rock Paper Scissors Game</title>
+  </head>
+  <body>
+    <p>Rock Paper Scissors Game</p>
+    <p>by: Neo Nimo</p>
+    <button class="choiceBtn" data-move="rock">Rock</button>
+    <button class="choiceBtn" data-move="paper">Paper</button>
+    <button class="choiceBtn" data-move="scissors">Scissors</button>
+    <p class="js-display-score"></p>
+    <button id="resetBtn">Reset Score</button>
+
+    <script>
+      const score = JSON.parse(localStorage.getItem("MYscore")) || {
+        user: 0,
+        comp: 0,
+        ties: 0,
+      };
+
+      const moveGenerator = () =>
+        ["rock", "paper", "scissors"][Math.floor(Math.random() * 3)];
+
+      const compareMove = (userMove) => {
+        const compMove = moveGenerator();
+        let result;
+        if (userMove === compMove) {
+          result = "Tie";
+          score.ties++;
+        } else if (
+          (userMove === "rock" && compMove === "scissors") ||
+          (userMove === "paper" && compMove === "rock") ||
+          (userMove === "scissors" && compMove === "paper")
+        ) {
+          result = "You win";
+          score.user++;
+        } else {
+          result = "You lose";
+          score.comp++;
+        }
+        localStorage.setItem("MYscore", JSON.stringify(score));
+        displayScore();
+        alert(
+          `You picked ${userMove}. Computer picked ${compMove}. ${result}.`
+        );
+      };
+
+      const displayScore = () => {
+        const scoreDisplay = document.querySelector(".js-display-score");
+        scoreDisplay.textContent = `Your Score: ${score.user} -- Computer Score: ${score.comp} -- Ties: ${score.ties}`;
+      };
+
+      const resetScore = () => {
+        localStorage.removeItem("MYscore");
+        Object.keys(score).forEach((key) => (score[key] = 0));
+        displayScore();
+        alert("Score has been reset.");
+      };
+
+      const choiceButtons = document.querySelectorAll(".choiceBtn");
+      choiceButtons.forEach((button) =>
+        button.addEventListener("click", () => compareMove(button.dataset.move))
+      );
+
+      document.getElementById("resetBtn").addEventListener("click", resetScore);
+
+      displayScore();
+    </script>
+  </body>
+</html>
